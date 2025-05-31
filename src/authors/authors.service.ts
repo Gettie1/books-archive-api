@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateAuthorDto } from './dto/create-author.dto';
 import { UpdateAuthorDto } from './dto/update-author.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -27,23 +31,93 @@ export class AuthorsService {
     const author = this.authorRepository.create({
       ...createAuthorDto,
       authorId,
+      bio: createAuthorDto.bio ?? undefined,
     });
     return this.authorRepository.save(author);
   }
 
-  findAll() {
-    return `This action returns all authors`;
+  async findAll() {
+    const authors = await this.authorRepository.find({
+      relations: ['book'], // Include books relation
+      select: {
+        authorId: true,
+        name: true,
+        bio: true,
+        createdAt: true,
+        book: {
+          id: true,
+          title: true,
+          description: true,
+        },
+      },
+    });
+    if (!authors || authors.length === 0) {
+      throw new BadRequestException('No authors found');
+    }
+    return authors;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} author`;
+  async findOne(id: number) {
+    const author = await this.authorRepository.findOne({
+      where: { authorId: id },
+      relations: ['book'], // Include books relation
+      select: {
+        authorId: true,
+        name: true,
+        bio: true,
+        createdAt: true,
+        book: {
+          id: true,
+          title: true,
+          description: true,
+        },
+      },
+    });
+    if (!author) {
+      throw new NotFoundException(`Author with id ${id} not found`);
+    }
+    return author;
   }
 
-  update(id: number, updateAuthorDto: UpdateAuthorDto) {
-    return `This action updates a #${id} author with name: ${updateAuthorDto.name}`;
+  async update(id: number, updateAuthorDto: UpdateAuthorDto) {
+    const author = await this.authorRepository.findOne({
+      where: { authorId: id },
+    });
+    if (!author) {
+      throw new NotFoundException(`Author with id ${id} not found`);
+    }
+    // Convert authorId to number if present in updateAuthorDto
+    const updateData = {
+      ...updateAuthorDto,
+      authorId:
+        updateAuthorDto.authorId !== undefined
+          ? Number(updateAuthorDto.authorId)
+          : undefined,
+      bio:
+        updateAuthorDto.bio !== null && updateAuthorDto.bio !== undefined
+          ? updateAuthorDto.bio
+          : undefined,
+    };
+    const updatedAuthor = this.authorRepository.merge(author, updateData);
+    return this.authorRepository.save(updatedAuthor);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} author`;
+  async remove(id: number) {
+    const author = await this.authorRepository.findOne({
+      where: { authorId: id },
+    });
+    if (!author) {
+      throw new NotFoundException(`Author with id ${id} not found`);
+    }
+    const books = await this.bookRepository.find({
+      where: { author: { authorId: id } },
+    });
+    if (books.length > 0) {
+      throw new BadRequestException(
+        `Cannot delete author with id ${id} because they have associated books`,
+      );
+    }
+    await this.authorRepository.delete(id);
+    return { message: `Author with id ${id} deleted successfully` };
   }
 }

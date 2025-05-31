@@ -16,14 +16,23 @@ export class ProfilesService {
     private readonly userRepository: Repository<User>, // Assuming User is an entity defined in your project
   ) {}
   async create(createProfileDto: CreateProfileDto) {
-    const profileExists = await this.profileRepository.findOne({
-      where: { id: Number(createProfileDto.Id) },
-    });
-    if (profileExists) {
-      throw new Error(`Profile with id ${createProfileDto.Id} already exists`);
+    // Convert id to number if present to match Profile entity type
+    const createProfileData = {
+      ...createProfileDto,
+      id: createProfileDto.id ? Number(createProfileDto.id) : undefined,
+    };
+    const profile = this.profileRepository.create(createProfileData);
+    if (createProfileDto.id) {
+      const user = await this.userRepository.findOne({
+        where: { id: Number(createProfileDto.id) },
+      });
+      if (!user) {
+        throw new NotFoundException(
+          `User with id ${createProfileDto.id} not found`,
+        );
+      }
+      profile.user = user; // Associate the profile with the user
     }
-    const profile = this.profileRepository.create(createProfileDto);
-    return this.profileRepository.save(profile);
   }
 
   async findAll(id?: string[]) {
@@ -70,14 +79,27 @@ export class ProfilesService {
     if (!profile) {
       throw new NotFoundException(`Profile with id ${id} not found`);
     }
+    // Convert id to number if present to match Profile entity type
+    const updateProfileData = {
+      ...updateProfileDto,
+      id: updateProfileDto.id ? Number(updateProfileDto.id) : undefined,
+    };
     const updatedProfile = this.profileRepository.merge(
       profile,
-      updateProfileDto,
+      updateProfileData,
     );
     return await this.profileRepository.save(updatedProfile);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} profile`;
+  async remove(id: number) {
+    const profile = await this.profileRepository.findOne({
+      where: { id: Number(id) },
+    });
+    if (!profile) {
+      throw new NotFoundException(`Profile with id ${id} not found`);
+    }
+    // Optionally, you can also remove the user associated with the profile
+    // await this.userRepository.delete(profile.user.id);
+    return await this.profileRepository.remove(profile);
   }
 }

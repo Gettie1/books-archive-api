@@ -14,9 +14,11 @@ export class UsersService {
     private readonly profileRepository: Repository<Profile>,
   ) {}
   async create(createUserDto: CreateUserDto) {
-    const user = this.userRepository.create(createUserDto);
-    if (createUserDto.profile) {
-      const profile = this.profileRepository.create(createUserDto.profile);
+    // Destructure profile from createUserDto to avoid type mismatch
+    const { profile: profileDto, ...userDto } = createUserDto;
+    const user = this.userRepository.create(userDto);
+    if (profileDto) {
+      const profile = this.profileRepository.create(profileDto); // Optionally map id to number if needed
       user.profile = profile;
     }
     return this.userRepository.save(user);

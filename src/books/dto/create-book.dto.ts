@@ -9,7 +9,7 @@ export class CreateBookDto {
   description: string;
 
   @IsString()
-  publicationY: string;
+  publicationYear: string;
 
   @IsBoolean()
   isAvailable: boolean;

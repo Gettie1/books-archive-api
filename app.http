@@ -49,14 +49,15 @@ POST {{url}}/profiles
 Content-Type: application/json
 
 {
+    "Id": "333",
     "bio": "Software Dveloper",
     "avatar": "https://example.com/avatar.jpg",
     "dateOfBirth": "1990-01-01"
 }
 ### Get a profile by ID
-GET {{url}}/profiles/333
+GET {{url}}/profiles/5
 ### Update a profile by ID
-PUT {{url}}/profiles/1
+PUT {{url}}/profiles/5
 Content-Type: application/json
 
 {
@@ -64,3 +65,52 @@ Content-Type: application/json
     "avatar": "https://example.com/avatar_updated.jpg",
     "dateOfBirth": "1990-01-01"
 }
+### Delete a profile by ID
+DELETE {{url}}/profiles/5 
+
+### AUTHOR
+### Get all authors
+GET {{url}}/authors
+### Create a new author
+POST {{url}}/authors
+Content-Type: application/json
+
+{
+    "authorId": "222",
+    "name": "F. Scott Fitzgerald",
+    "bio": "An American novelist and short story writer.",
+    "isActive": true,
+    "birthDate": "1896-09-24"
+}
+### Get an author by ID
+GET {{url}}/authors/123
+### Update an author by ID
+PUT {{url}}/authors/123
+Content-Type: application/json
+
+{
+    "name": "F. Scott Fitzgerald Updated",
+    "bio": "An American novelist and short story writer, known for his novel 'The Great Gatsby'.",
+    "isActive": false,
+    "birthDate": "1896-09-24"
+}
+### Delete an author by ID
+DELETE {{url}}/authors/123
+###BOOKS
+### Get all books
+GET {{url}}/books 
+### Create a new book
+POST {{url}}/books
+Content-Type: application/json
+
+{
+    "title": "The Great Gatsby",
+   "description": "A novel written by American author F. Scott Fitzgerald.",
+   "publishedYear": 1925,
+   "isAvailable": true,
+   "author": {
+       "name": "F. Scott Fitzgerald",
+       "birthdate": "1896-09-24"
+       }
+}
+

@@ -1,21 +1,25 @@
-import { Column, OneToMany, PrimaryGeneratedColumn, Relation } from 'typeorm';
+import { Column, OneToMany, PrimaryColumn, Relation } from 'typeorm';
 import { Book } from 'src/books/entities/book.entity';
 import { Entity } from 'typeorm';
 @Entity()
 export class Author {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   authorId: number;
   @Column()
   name: string;
-  @Column()
+  @Column({ type: 'text', nullable: true })
   bio: string;
-  @Column()
+  @Column({ nullable: true })
   birthDate: Date;
-  @Column()
+  @Column({ type: 'boolean', default: true })
   isActive: boolean;
-  @Column()
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
-  @Column()
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
   upDatedAt: Date;
   @OneToMany(() => Book, (book) => book.author)
   book: Relation<Book>;

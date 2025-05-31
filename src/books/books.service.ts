@@ -12,7 +12,7 @@ export class BooksService {
     private readonly authorRepository: Repository<Author>,
   ) {}
   async create(createBookDto: { authorId?: number; [key: string]: any }) {
-    // Exclude authorId from createBookDto before creating the book entity
+    // Omit authorId from createBookDto before creating the Book entity
     const { authorId, ...bookData } = createBookDto;
     const book = this.bookRepository.create(bookData);
     if (authorId) {
@@ -21,6 +21,8 @@ export class BooksService {
       });
       if (author) {
         book.author = author;
+      } else {
+        throw new Error(`Author with id ${authorId} not found`);
       }
     }
     return this.bookRepository.save(book);
@@ -32,27 +34,36 @@ export class BooksService {
         id: true,
         title: true,
         description: true,
-        // publishedDate: true, // Removed because it does not exist in Book entity
-        // isActive: true,
-        // createdAt: true,
-        // updatedAt: true,
+        publicationYear: true,
+        author: {
+          authorId: true,
+          name: true,
+          bio: true,
+        },
       },
     });
   }
   async findOne(id: number) {
-    return this.bookRepository.findOne({
+    const book = await this.bookRepository.findOne({
       where: { id: Number(id) },
       relations: ['author'], // Include author relation
       select: {
         id: true,
         title: true,
         description: true,
-        // publishedDate: true, // Removed because it does not exist in Book entity
-        // isActive: true,
-        // createdAt: true,
-        // updatedAt: true,
+        publicationYear: true, // Removed because it does not exist in Book entity
+        isAvailable: true,
+        author: {
+          authorId: true,
+          name: true,
+          bio: true,
+        },
       },
     });
+    if (!book) {
+      throw new Error(`Book with id ${id} not found`);
+    }
+    return book;
   }
   async update(
     id: number,

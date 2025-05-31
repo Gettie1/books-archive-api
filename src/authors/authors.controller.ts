@@ -21,7 +21,7 @@ export class AuthorsController {
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.authorsService.findAll();
   }
 
