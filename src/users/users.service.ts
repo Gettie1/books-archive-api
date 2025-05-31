@@ -71,28 +71,16 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    return this.userRepository.update(id, updateUserDto).then(() => {
-      return this.userRepository.findOne({
-        where: { id: Number(id) },
-        relations: ['profile'], // Include profile relation
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          isActive: true,
-          createdAt: true,
-          updatedAt: true,
-          profile: {
-            id: true,
-            bio: true,
-            avatar: true,
-            dateOfBirth: true,
-            location: true,
-            createdAt: true,
-          },
-        },
-      });
+    const user = await this.userRepository.findOne({
+      where: { id: Number(id) },
+      relations: ['profile'], // Include profile relation
     });
+    if (!user) {
+      throw new Error(`User with id ${id} not found`);
+    }
+
+    this.userRepository.merge(user, updateUserDto);
+    return this.userRepository.save(user);
   }
 
   async remove(id: number) {

@@ -1,8 +1,9 @@
 // import { Type } from 'class-transformer';
 import { IsOptional, IsString } from 'class-validator';
 export class CreateProfileDto {
+  @IsOptional()
   @IsString()
-  Id: string;
+  Id?: string;
   @IsString()
   @IsOptional()
   @IsString()

@@ -1,10 +1,11 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { Profile } from './entities/profile.entity';
 import { User } from 'src/users/entities/user.entity'; // Assuming User is an entity defined in your project
+// import {  Error } from 'console';
 
 @Injectable()
 export class ProfilesService {
@@ -19,9 +20,7 @@ export class ProfilesService {
       where: { id: Number(createProfileDto.Id) },
     });
     if (profileExists) {
-      throw new BadRequestException(
-        `Profile with id ${createProfileDto.Id} already exists`,
-      );
+      throw new Error(`Profile with id ${createProfileDto.Id} already exists`);
     }
     const profile = this.profileRepository.create(createProfileDto);
     return this.profileRepository.save(profile);
@@ -37,13 +36,45 @@ export class ProfilesService {
     return this.profileRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} profile`;
+  async findOne(id: number) {
+    const profile = await this.profileRepository.findOne({
+      where: { id: Number(id) },
+      relations: ['user'], // Include user relation
+      select: {
+        id: true,
+        bio: true,
+        avatar: true,
+        dateOfBirth: true,
+        location: true,
+        createdAt: true,
+        user: {
+          id: true,
+          name: true,
+          email: true,
+          isActive: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+    });
+    if (!profile) {
+      throw new NotFoundException(`Profile with id ${id} not found`);
+    }
+    return profile;
   }
 
-  update(id: number, updateProfileDto: UpdateProfileDto) {
-    console.log(updateProfileDto);
-    return `This action updates a #${id} profile`;
+  async update(id: number, updateProfileDto: UpdateProfileDto) {
+    const profile = await this.profileRepository.findOne({
+      where: { id: Number(id) },
+    });
+    if (!profile) {
+      throw new NotFoundException(`Profile with id ${id} not found`);
+    }
+    const updatedProfile = this.profileRepository.merge(
+      profile,
+      updateProfileDto,
+    );
+    return await this.profileRepository.save(updatedProfile);
   }
 
   remove(id: number) {

@@ -9,18 +9,58 @@ POST {{url}}/users
 Content-Type: application/json
 
 {
-    "name": "sam Doe",
-    "email": "sam@gmail.com",
+    "name": "John Doe",
+    "email": "john@gmail.com",
     "password": "password123",
     "isActive": true,
     "profile": {
-        "Id": "123",
-        "bio": "Software Developer",
+        "Id":"12345",
+        "bio": "Software Engineer",
         "avatar": "https://example.com/avatar.jpg",
-        "dateOfBirth": "1990-01-01",
-        "location": "New York, USA"
+        "dateOfBirth": "1990-01-01"
     }
 }
 ### Get a user by ID
-GET {{url}}/users/getrude
+GET {{url}}/users/1
+### Update a user by ID
+PUT {{url}}/users/1
+Content-Type: application/json
 
+{
+    "name": "sam Doe Updated",
+    "email": "doe@gmail.com",
+    "password": "newpassword123",
+    "isActive": false,
+    "profile": {
+        "Id":"12345",
+        "bio": "Senior Software Engineer",
+        "avatar": "https://example.com/avatar_updated.jpg",
+        "dateOfBirth": "1990-01-01"
+    }
+}
+
+### Delete a user by ID
+DELETE {{url}}/users/1
+### PROFILE
+### Get all profiles
+GET {{url}}/profiles
+### Create a new profile
+POST {{url}}/profiles
+Content-Type: application/json
+
+{
+    "bio": "Software Dveloper",
+    "avatar": "https://example.com/avatar.jpg",
+    "dateOfBirth": "1990-01-01"
+}
+### Get a profile by ID
+GET {{url}}/profiles/333
+### Update a profile by ID
+PUT {{url}}/profiles/1
+Content-Type: application/json
+
+{
+    "bio": "Senior Software Dveloper",
+    "avatar": "https://example.com/avatar_updated.jpg",
+    "dateOfBirth": "1990-01-01"
+}
