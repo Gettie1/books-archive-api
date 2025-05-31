@@ -2,16 +2,18 @@ import {
   Column,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
 import { Profile } from '../../profiles/entities/profile.entity';
+import { Bookreview } from 'src/bookreviews/entities/bookreview.entity';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string; // Unique identifier (UUID)
+  @PrimaryGeneratedColumn()
+  id: number; // Unique identifier (UUID)
   @Column()
   name: string; // Unique user name
   @Column({ unique: true })
@@ -35,4 +37,6 @@ export class User {
   })
   @JoinColumn()
   profile: Relation<Profile>; // Establishes a one-to-one relationship with Profile entity
+  @OneToMany(() => Bookreview, (bookReview) => bookReview.user)
+  bookReview: Relation<Bookreview>;
 }

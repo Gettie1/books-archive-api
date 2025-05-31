@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BooksController } from './books/books.controller';
-import { BooksService } from './books/books.service';
+// import { BooksController } from './books/books.controller';
+// import { BooksService } from './books/books.service';
 import { BooksModule } from './books/books.module';
 import { UsersModule } from './users/users.module';
 import { ProfilesModule } from './profiles/profiles.module';
@@ -39,7 +39,7 @@ import { BookreviewsModule } from './bookreviews/bookreviews.module';
     CategoriesModule,
     BookreviewsModule,
   ],
-  controllers: [BooksController],
-  providers: [BooksService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

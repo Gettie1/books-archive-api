@@ -49,7 +49,7 @@ export class UsersService {
 
   async findOne(id: number) {
     return this.userRepository.findOne({
-      where: { id: id.toString() },
+      where: { id: Number(id) },
       relations: ['profile'], // Include profile relation
       select: {
         id: true,
@@ -73,7 +73,7 @@ export class UsersService {
   async update(id: number, updateUserDto: UpdateUserDto) {
     return this.userRepository.update(id, updateUserDto).then(() => {
       return this.userRepository.findOne({
-        where: { id: id.toString() },
+        where: { id: Number(id) },
         relations: ['profile'], // Include profile relation
         select: {
           id: true,

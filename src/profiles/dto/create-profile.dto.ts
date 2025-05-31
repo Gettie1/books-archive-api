@@ -1,3 +1,4 @@
+// import { Type } from 'class-transformer';
 import { IsOptional, IsString } from 'class-validator';
 export class CreateProfileDto {
   @IsString()
@@ -9,8 +10,10 @@ export class CreateProfileDto {
   @IsString()
   @IsOptional()
   avatar?: string;
+  // @IsOptional()
+  // @Type(() => Date)
+  // @IsDate()
   @IsString()
-  @IsOptional()
   dateOfBirth?: string;
   @IsOptional()
   location?: string;

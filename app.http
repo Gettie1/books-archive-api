@@ -9,8 +9,8 @@ POST {{url}}/users
 Content-Type: application/json
 
 {
-    "name": "John Doe",
-    "email": "john@gmail.com",
+    "name": "sam Doe",
+    "email": "sam@gmail.com",
     "password": "password123",
     "isActive": true,
     "profile": {
@@ -21,4 +21,6 @@ Content-Type: application/json
         "location": "New York, USA"
     }
 }
+### Get a user by ID
+GET {{url}}/users/getrude
 
