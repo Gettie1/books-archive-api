@@ -1,0 +1,24 @@
+@url=http://localhost:8000
+
+### user
+
+### Get all users 
+GET {{url}}/users
+### Create a new user
+POST {{url}}/users
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "email": "john@gmail.com",
+    "password": "password123",
+    "isActive": true,
+    "profile": {
+        "Id": "123",
+        "bio": "Software Developer",
+        "avatar": "https://example.com/avatar.jpg",
+        "dateOfBirth": "1990-01-01",
+        "location": "New York, USA"
+    }
+}
+

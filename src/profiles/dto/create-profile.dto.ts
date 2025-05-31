@@ -1,15 +1,17 @@
-import { IsOptional, IsString, IsDate } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 export class CreateProfileDto {
   @IsString()
+  Id: string;
+  @IsString()
   @IsOptional()
+  @IsString()
   bio?: string;
   @IsString()
   @IsOptional()
   avatar?: string;
-  @IsDate()
-  @IsOptional()
-  dateOfBirth?: Date;
   @IsString()
+  @IsOptional()
+  dateOfBirth?: string;
   @IsOptional()
   location?: string;
 }

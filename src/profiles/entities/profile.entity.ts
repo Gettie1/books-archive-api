@@ -1,7 +1,8 @@
 import { Column, OneToOne, PrimaryGeneratedColumn, Relation } from 'typeorm';
 
 import { User } from '../../users/entities/user.entity';
-
+import { Entity } from 'typeorm/decorator/entity/Entity';
+@Entity()
 export class Profile {
   @PrimaryGeneratedColumn()
   id: string;
