@@ -1,5 +1,7 @@
 import {
   Column,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -13,7 +15,7 @@ import { Category } from 'src/categories/entities/category.entity';
 @Entity()
 export class Book {
   @PrimaryGeneratedColumn()
-  id: number;
+  bookId: number;
   @Column({ unique: true })
   title: string; // Unique book title
   @Column({ type: 'text', nullable: true })
@@ -26,6 +28,7 @@ export class Book {
   author: Relation<Author>;
   @OneToMany(() => Bookreview, (bookReview) => bookReview.book)
   bookReview: Relation<Bookreview>;
-  @OneToMany(() => Category, (category) => category.book)
-  category: Relation<Category>; // Assuming Book is linked to Category
+  @ManyToMany(() => Category, (category) => category.book)
+  @JoinTable()
+  category: Relation<Category>;
 }

@@ -1,5 +1,5 @@
 import { Book } from 'src/books/entities/book.entity';
-import { Column, ManyToOne, PrimaryGeneratedColumn, Relation } from 'typeorm';
+import { Column, ManyToMany, PrimaryGeneratedColumn, Relation } from 'typeorm';
 import { Entity } from 'typeorm';
 @Entity()
 export class Category {
@@ -17,6 +17,6 @@ export class Category {
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
-  @ManyToOne(() => Book, (book) => book.category)
-  book: Relation<Book>; // Assuming Category is linked to Book
+  @ManyToMany(() => Book, (book) => book.category)
+  book: Relation<Book[]>; // Assuming Category is linked to Book
 }

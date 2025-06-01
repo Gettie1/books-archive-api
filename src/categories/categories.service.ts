@@ -14,7 +14,7 @@ export class CategoriesService {
     @InjectRepository(Book) private readonly bookRepository: Repository<Book>, // Assuming Book is an entity defined in your project
   ) {}
   create(createCategoryDto: CreateCategoryDto) {
-    return `This action adds a new category with name: ${createCategoryDto.name}`;
+    
   }
 
   findAll() {

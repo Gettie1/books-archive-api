@@ -1,77 +1,58 @@
-import {
-  Injectable,
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAuthorDto } from './dto/create-author.dto';
 import { UpdateAuthorDto } from './dto/update-author.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Author } from './entities/author.entity';
-import { Book } from 'src/books/entities/book.entity'; // Assuming Book is an entity defined in your project
+// import { Book } from 'src/books/entities/book.entity'; // Assuming Book is an entity defined in your project
 
 @Injectable()
 export class AuthorsService {
   constructor(
     @InjectRepository(Author)
     private readonly authorRepository: Repository<Author>,
-    @InjectRepository(Book) // Assuming Book is an entity defined in your project
-    private readonly bookRepository: Repository<Book>,
   ) {}
-  async create(createAuthorDto: CreateAuthorDto) {
-    const authorId = Number(createAuthorDto.authorId);
-    const authorExists = await this.authorRepository.findOne({
-      where: { authorId: authorId },
+  async create(
+    id: string,
+    name: string,
+    createAuthorDto: CreateAuthorDto,
+  ): Promise<Author> {
+    // Check if an author with the same name already exists
+    const existingAuthor = await this.authorRepository.findOne({
+      where: { authorId: createAuthorDto.authorId },
     });
-    if (authorExists) {
-      throw new BadRequestException(
-        `Author with id ${authorId} already exists`,
+    if (existingAuthor) {
+      throw new NotFoundException(
+        `Author with name ${createAuthorDto.name} already exists`,
       );
     }
     const author = this.authorRepository.create({
       ...createAuthorDto,
-      authorId,
-      bio: createAuthorDto.bio ?? undefined,
+      name, // Use the provided name
+      bio: createAuthorDto.bio === null ? undefined : createAuthorDto.bio,
     });
     return this.authorRepository.save(author);
   }
 
-  async findAll() {
-    const authors = await this.authorRepository.find({
-      relations: ['book'], // Include books relation
-      select: {
-        authorId: true,
-        name: true,
-        bio: true,
-        createdAt: true,
-        book: {
-          id: true,
-          title: true,
-          description: true,
-        },
-      },
-    });
-    if (!authors || authors.length === 0) {
-      throw new BadRequestException('No authors found');
+  async findAll(search?: string): Promise<Author[]> {
+    if (search) {
+      return this.authorRepository.find({
+        where: [{ name: search }, { bio: search }],
+        relations: ['book'], // Include books relation
+        select: ['authorId', 'name', 'bio', 'createdAt'],
+      });
     }
-    return authors;
+    return this.authorRepository.find({
+      relations: ['book'], // Include books relation
+      select: ['authorId', 'name', 'bio', 'createdAt'],
+    });
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<Author> {
     const author = await this.authorRepository.findOne({
       where: { authorId: id },
       relations: ['book'], // Include books relation
-      select: {
-        authorId: true,
-        name: true,
-        bio: true,
-        createdAt: true,
-        book: {
-          id: true,
-          title: true,
-          description: true,
-        },
-      },
+      select: ['authorId', 'name', 'bio', 'createdAt'],
     });
     if (!author) {
       throw new NotFoundException(`Author with id ${id} not found`);
@@ -79,26 +60,15 @@ export class AuthorsService {
     return author;
   }
 
-  async update(id: number, updateAuthorDto: UpdateAuthorDto) {
+  async update(id: number, updateAuthorDto: UpdateAuthorDto): Promise<Author> {
     const author = await this.authorRepository.findOne({
       where: { authorId: id },
     });
     if (!author) {
       throw new NotFoundException(`Author with id ${id} not found`);
     }
-    // Convert authorId to number if present in updateAuthorDto
-    const updateData = {
-      ...updateAuthorDto,
-      authorId:
-        updateAuthorDto.authorId !== undefined
-          ? Number(updateAuthorDto.authorId)
-          : undefined,
-      bio:
-        updateAuthorDto.bio !== null && updateAuthorDto.bio !== undefined
-          ? updateAuthorDto.bio
-          : undefined,
-    };
-    const updatedAuthor = this.authorRepository.merge(author, updateData);
+    Object.assign(author, updateAuthorDto);
+    const updatedAuthor = author;
     return this.authorRepository.save(updatedAuthor);
   }
 
@@ -108,14 +78,6 @@ export class AuthorsService {
     });
     if (!author) {
       throw new NotFoundException(`Author with id ${id} not found`);
-    }
-    const books = await this.bookRepository.find({
-      where: { author: { authorId: id } },
-    });
-    if (books.length > 0) {
-      throw new BadRequestException(
-        `Cannot delete author with id ${id} because they have associated books`,
-      );
     }
     await this.authorRepository.delete(id);
     return { message: `Author with id ${id} deleted successfully` };

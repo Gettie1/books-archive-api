@@ -23,7 +23,7 @@ Content-Type: application/json
 ### Get a user by ID
 GET {{url}}/users/1
 ### Update a user by ID
-PUT {{url}}/users/1
+PUT {{url}}/users/7
 Content-Type: application/json
 
 {
@@ -32,7 +32,6 @@ Content-Type: application/json
     "password": "newpassword123",
     "isActive": false,
     "profile": {
-        "Id":"12345",
         "bio": "Senior Software Engineer",
         "avatar": "https://example.com/avatar_updated.jpg",
         "dateOfBirth": "1990-01-01"
@@ -49,7 +48,6 @@ POST {{url}}/profiles
 Content-Type: application/json
 
 {
-    "Id": "333",
     "bio": "Software Dveloper",
     "avatar": "https://example.com/avatar.jpg",
     "dateOfBirth": "1990-01-01"
@@ -76,16 +74,16 @@ POST {{url}}/authors
 Content-Type: application/json
 
 {
-    "authorId": "222",
+    "authorId": "109",
     "name": "F. Scott Fitzgerald",
     "bio": "An American novelist and short story writer.",
     "isActive": true,
     "birthDate": "1896-09-24"
 }
 ### Get an author by ID
-GET {{url}}/authors/123
+GET {{url}}/authors/109
 ### Update an author by ID
-PUT {{url}}/authors/123
+PUT {{url}}/authors/109
 Content-Type: application/json
 
 {
@@ -95,7 +93,7 @@ Content-Type: application/json
     "birthDate": "1896-09-24"
 }
 ### Delete an author by ID
-DELETE {{url}}/authors/123
+DELETE {{url}}/authors/109
 ###BOOKS
 ### Get all books
 GET {{url}}/books 
@@ -106,11 +104,22 @@ Content-Type: application/json
 {
     "title": "The Great Gatsby",
    "description": "A novel written by American author F. Scott Fitzgerald.",
-   "publishedYear": 1925,
+   "publicationYear":"1925",
    "isAvailable": true,
-   "author": {
-       "name": "F. Scott Fitzgerald",
-       "birthdate": "1896-09-24"
-       }
+   "authorId": "101"
+}
+### Get a book by ID
+GET {{url}}/books/11
+
+###update a book by an id
+PUT {{url}}/books/1
+Content-Type: application/json
+
+{
+    "title": "The Great Gatsby Updated",
+    "description": "A novel written by American author F. Scott Fitzgerald, updated edition.",
+    "publicationYear": "1925",
+    "isAvailable": false,
+    "authorId": "101"
 }
 

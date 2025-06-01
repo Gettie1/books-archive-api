@@ -17,8 +17,8 @@ export class BookreviewsService {
     @InjectRepository(Book)
     private readonly bookRepository: Repository<Book>,
   ) {}
-  create(createBookreviewDto: CreateBookreviewDto) {
-    return `This action adds a new bookreview with content: ${createBookreviewDto.content}`;
+  async create(createBookreviewDto: CreateBookreviewDto) {
+     ;
   }
 
   findAll() {

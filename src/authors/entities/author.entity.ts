@@ -22,5 +22,5 @@ export class Author {
   })
   upDatedAt: Date;
   @OneToMany(() => Book, (book) => book.author)
-  book: Relation<Book>;
+  book: Relation<Book>[]; // One author can write multiple books
 }

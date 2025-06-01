@@ -1,6 +1,5 @@
 import { IsString, IsBoolean } from 'class-validator';
-import { Entity } from 'typeorm';
-@Entity()
+
 export class CreateBookDto {
   @IsString()
   title: string;
@@ -13,4 +12,7 @@ export class CreateBookDto {
 
   @IsBoolean()
   isAvailable: boolean;
+
+  @IsString()
+  authorId: number; // Assuming authorId is a string, adjust if it's a number
 }
