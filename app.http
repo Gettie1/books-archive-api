@@ -109,7 +109,7 @@ Content-Type: application/json
    "authorId": "101"
 }
 ### Get a book by ID
-GET {{url}}/books/11
+GET {{url}}/books/1
 
 ###update a book by an id
 PUT {{url}}/books/1
@@ -121,5 +121,50 @@ Content-Type: application/json
     "publicationYear": "1925",
     "isAvailable": false,
     "authorId": "101"
+}
+### Delete a book by ID
+DELETE {{url}}/books/2
+### Get all books by author ID
+GET {{url}}/authors/101/books
+###categories
+### Get all categories
+GET {{url}}/categories
+### Create a new category
+POST {{url}}/categories
+Content-Type: application/json
+
+{
+    "name": "Fiction",
+    "description": "A category for fictional books."
+}
+### Get a category by ID
+GET {{url}}/categories/1
+### Update a category by ID
+PUT {{url}}/categories/1
+Content-Type: application/json
+
+{
+    "name": "Fiction Updated",
+    "description": "A category for fictional books, updated description."
+}
+### Delete a category by ID
+DELETE {{url}}/categories/1
+### Get all books in a category
+GET {{url}}/categories/1/books
+### Get all books by category ID
+GET {{url}}/books?categoryId=1
+#### bookreviews
+### Get all book reviews    
+GET {{url}}/bookreviews
+### Create a new book review
+POST {{url}}/bookreviews
+Content-Type: application/json
+
+{
+   "content": "An insightful review of The Great Gatsby.",
+   "createdAt":"",
+   "rating": 5,
+    "bookId": "1",
+    "userId": "7"
 }
 

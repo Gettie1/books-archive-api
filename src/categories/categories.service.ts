@@ -13,23 +13,62 @@ export class CategoriesService {
     private readonly categoryRepository: Repository<Category>,
     @InjectRepository(Book) private readonly bookRepository: Repository<Book>, // Assuming Book is an entity defined in your project
   ) {}
-  create(createCategoryDto: CreateCategoryDto) {
-    
+  async create(createCategoryDto: CreateCategoryDto) {
+    const category = this.categoryRepository.create({
+      name: createCategoryDto.name,
+      description: createCategoryDto.description,
+    });
+    return this.categoryRepository.save(category);
   }
 
-  findAll() {
-    return `This action returns all categories`;
+  async findAll(search?: string) {
+    if (search) {
+      return this.categoryRepository.find({
+        where: [{ name: search }, { description: search }],
+        relations: ['book'], // Include books relation
+        select: ['id', 'name', 'description', 'createdAt'],
+      });
+    }
+    return this.categoryRepository.find({
+      relations: ['book'], // Include books relation
+      select: ['id', 'name', 'description', 'createdAt'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(id: number) {
+    const category = await this.categoryRepository.findOne({
+      where: { id: Number(id) },
+      relations: ['book'], // Include books relation
+      select: ['id', 'name', 'description', 'createdAt'],
+    });
+    if (!category) {
+      throw new Error(`Category with id ${id} not found`);
+    }
+    return category;
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category with name: ${updateCategoryDto.name}`;
+  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    const category = await this.categoryRepository.findOne({
+      where: { id: Number(id) },
+    });
+    if (!category) {
+      throw new Error(`Category with id ${id} not found`);
+    }
+    // Update the category properties
+    category.name = updateCategoryDto.name || category.name;
+    category.description =
+      updateCategoryDto.description || category.description;
+
+    return this.categoryRepository.save(category);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: number) {
+    const category = await this.categoryRepository.findOne({
+      where: { id: Number(id) },
+    });
+    if (!category) {
+      throw new Error(`Category with id ${id} not found`);
+    }
+    return this.categoryRepository.remove(category);
   }
 }

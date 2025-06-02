@@ -30,5 +30,5 @@ export class Book {
   bookReview: Relation<Bookreview>;
   @ManyToMany(() => Category, (category) => category.book)
   @JoinTable()
-  category: Relation<Category>;
+  category: Relation<Category[]>;
 }

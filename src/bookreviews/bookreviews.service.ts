@@ -18,22 +18,73 @@ export class BookreviewsService {
     private readonly bookRepository: Repository<Book>,
   ) {}
   async create(createBookreviewDto: CreateBookreviewDto) {
-     ;
+    const foundUser = await this.userRepository.findOne({
+      where: { id: Number(createBookreviewDto.userId) },
+    });
+    if (!foundUser) {
+      throw new Error(`User with id ${createBookreviewDto.userId} not found`);
+    }
+
+    const foundBook = await this.bookRepository.findOne({
+      where: { bookId: Number(createBookreviewDto.bookId) },
+    });
+    if (!foundBook) {
+      throw new Error(`Book with id ${createBookreviewDto.bookId} not found`);
+    }
+
+    const bookreview = this.bookreviewRepository.create({
+      content: createBookreviewDto.content,
+      rating: createBookreviewDto.rating,
+      user: foundUser,
+      book: foundBook,
+    });
+    return this.bookreviewRepository.save(bookreview);
   }
 
-  findAll() {
-    return `This action returns all bookreviews`;
+  async findAll() {
+    return this.bookreviewRepository.find({
+      relations: ['user', 'book'], // Include user and book relations
+      select: {
+        id: true,
+        content: true,
+        rating: true,
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} bookreview`;
+  async findOne(id: number) {
+    const bookreview = await this.bookreviewRepository.findOne({
+      where: { id: Number(id) },
+      relations: ['user', 'book'], // Include user and book relations
+      select: {
+        id: true,
+        content: true,
+        rating: true,
+      },
+    });
+    if (!bookreview) {
+      throw new Error(`Book review with id ${id} not found`);
+    }
+    return bookreview;
+  }
+  async update(id: number, updateBookreviewDto: UpdateBookreviewDto) {
+    const bookreview = await this.bookreviewRepository.findOne({
+      where: { id: Number(id) },
+    });
+    if (!bookreview) {
+      throw new Error(`Book review with id ${id} not found`);
+    }
+    Object.assign(bookreview, updateBookreviewDto);
+    return this.bookreviewRepository.save(bookreview);
   }
 
-  update(id: number, updateBookreviewDto: UpdateBookreviewDto) {
-    return `This action updates a #${id} bookreview with content: ${updateBookreviewDto.content}`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} bookreview`;
+  async remove(id: number) {
+    const bookreview = await this.bookreviewRepository.findOne({
+      where: { id: Number(id) },
+    });
+    if (!bookreview) {
+      throw new Error(`Book review with id ${id} not found`);
+    }
+    return this.bookreviewRepository.remove(bookreview);
   }
 }

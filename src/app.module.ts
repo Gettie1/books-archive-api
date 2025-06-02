@@ -9,6 +9,8 @@ import { ProfilesModule } from './profiles/profiles.module';
 import { AuthorsModule } from './authors/authors.module';
 import { CategoriesModule } from './categories/categories.module';
 import { BookreviewsModule } from './bookreviews/bookreviews.module';
+import { SeedResolver } from './seed/seed.resolver';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -38,8 +40,9 @@ import { BookreviewsModule } from './bookreviews/bookreviews.module';
     AuthorsModule,
     CategoriesModule,
     BookreviewsModule,
+    SeedModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [SeedResolver],
 })
 export class AppModule {}

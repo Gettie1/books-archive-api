@@ -17,7 +17,12 @@ export class AuthorsController {
 
   @Post()
   create(@Body() createAuthorDto: CreateAuthorDto) {
-    return this.authorsService.create(createAuthorDto);
+    // Assuming authorId and name are properties of createAuthorDto
+    return this.authorsService.create(
+      String(createAuthorDto.authorId),
+      createAuthorDto.name,
+      createAuthorDto,
+    );
   }
 
   @Get()

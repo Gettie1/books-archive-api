@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Book } from './entities/book.entity';
 import { Author } from 'src/authors/entities/author.entity';
+import { Category } from 'src/categories/entities/category.entity';
 import { CreateBookDto } from './dto/create-book.dto';
 
 @Injectable()
@@ -11,6 +12,8 @@ export class BooksService {
     @InjectRepository(Book) private readonly bookRepository: Repository<Book>,
     @InjectRepository(Author)
     private readonly authorRepository: Repository<Author>,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
   ) {}
   async create(createBookDto: CreateBookDto): Promise<Book> {
     const foundAuthor = await this.authorRepository.findOne({
@@ -96,5 +99,71 @@ export class BooksService {
       throw new Error(`Book with id ${id} not found`);
     }
     return this.bookRepository.remove(book);
+  }
+  //  manyToMany
+  async addCategoryToBook(bookId: number, categoryId: number) {
+    const book = await this.bookRepository.findOne({
+      where: { bookId: Number(bookId) },
+      relations: ['category'], // Include category relation
+    });
+    if (!book) {
+      throw new NotFoundException(`Book with id ${bookId} not found`);
+    }
+    const category = await this.categoryRepository.findOne({
+      where: { id: Number(categoryId) },
+    });
+    if (!category) {
+      throw new NotFoundException(`Category with id ${categoryId} not found`);
+    }
+    // Ensure book.category is an array
+    if (!Array.isArray(book.category)) {
+      book.category = [];
+    }
+    // Prevent duplicate categories
+    if (!book.category.some((cat) => cat.id === category.id)) {
+      book.category.push(category);
+    }
+    return this.bookRepository.save(book);
+  }
+  async removeCategoryFromBook(bookId: number, categoryId: number) {
+    const book = await this.bookRepository.findOne({
+      where: { bookId: Number(bookId) },
+      relations: ['category'], // Include category relation
+    });
+    if (!book) {
+      throw new NotFoundException(`Book with id ${bookId} not found`);
+    }
+    book.category = book.category.filter(
+      (category) => category.id !== categoryId,
+    );
+    return this.bookRepository.save(book);
+  }
+  async findBooksByCategory(categoryId: number) {
+    const books = await this.bookRepository.find({
+      where: {
+        category: {
+          id: Number(categoryId),
+        },
+      },
+      relations: ['category'], // Include category relation
+      select: {
+        bookId: true,
+        title: true,
+        description: true,
+        publicationYear: true,
+        isAvailable: true,
+        category: {
+          id: true,
+          name: true,
+          description: true,
+        },
+      },
+    });
+    if (books.length === 0) {
+      throw new NotFoundException(
+        `No books found for category id ${categoryId}`,
+      );
+    }
+    return books;
   }
 }

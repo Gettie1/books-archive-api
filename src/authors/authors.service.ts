@@ -13,7 +13,7 @@ export class AuthorsService {
     private readonly authorRepository: Repository<Author>,
   ) {}
   async create(
-    id: string,
+    authorId: string,
     name: string,
     createAuthorDto: CreateAuthorDto,
   ): Promise<Author> {
